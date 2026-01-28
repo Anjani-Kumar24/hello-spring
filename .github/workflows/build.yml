@@ -12,17 +12,22 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
-      # Step 1: Download your repo
+      # Step 1: Checkout code
       - name: Checkout code
         uses: actions/checkout@v4
 
-      # Step 2: Install Java (stable version)
+      # Step 2: Setup Java 8 (IMPORTANT)
       - name: Setup Java
         uses: actions/setup-java@v4
         with:
           distribution: temurin
-          java-version: 11
+          java-version: 8
+          cache: maven
 
-      # Step 3: Build WITHOUT tests
-      - name: Build project (skip tests)
-        run: mvn clean package -DskipTests
+      # Step 3: Build
+      - name: Build project
+        run: mvn clean compile
+
+      # Step 4: Run tests (MANDATORY)
+      - name: Run tests
+        run: mvn test
