@@ -17,5 +17,3 @@ jobs:
         with:
           ref: artefacts-store
 
-      - name: Verify artifact exists
-        run: ls -l artifacts
