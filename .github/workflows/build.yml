@@ -16,26 +16,21 @@ env:
 
 jobs:
   build:
+    
     runs-on: ubuntu-latest
 
     steps:
-      - uses: actions/checkout@v4
+      - name: checkout code
+        uses: actions/checkout@v4
 
-      - uses: actions/setup-java@v4
+      - name: setting up java
+        uses: actions/setup-java@v4
         with:
           distribution: temurin
           java-version: 8
-          cache: maven
 
       - name: Build & Test
         run: mvn clean package
-
-
-      - name: Debug – list target folder
-        run: |
-          echo "---- TARGET DIRECTORY ----"
-          ls -l target || echo "❌ target folder not found"
-
 
       - name: Upload artifact
         uses: actions/upload-artifact@v4
