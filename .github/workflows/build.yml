@@ -30,6 +30,13 @@ jobs:
       - name: Build & Test
         run: mvn clean package
 
+
+      - name: Debug – list target folder
+        run: |
+          echo "---- TARGET DIRECTORY ----"
+          ls -l target || echo "❌ target folder not found"
+
+
       - name: Upload artifact
         uses: actions/upload-artifact@v4
         with:
