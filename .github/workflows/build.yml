@@ -2,9 +2,11 @@ name: Java Build Pipeline
 
 on:
   push:
+    branches:
+      - master
   pull_request:
     branches:
-      - main
+      - master
   workflow_dispatch:
 
 env:
@@ -39,6 +41,7 @@ jobs:
           git config user.name "$GIT_NAME"
           git config user.email "$GIT_EMAIL"
 
+          git fetch origin          
           git checkout artefacts-store
           mkdir -p artifacts
           cp target/*.jar artifacts/
