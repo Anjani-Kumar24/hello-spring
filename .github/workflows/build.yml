@@ -7,6 +7,11 @@ on:
       - main
   workflow_dispatch:
 
+env:
+  GIT_NAME: Anjani-Kumar24
+  GIT_EMAIL: anjani.kumar@beehyv.com
+
+
 jobs:
   build:
     runs-on: ubuntu-latest
@@ -28,3 +33,17 @@ jobs:
         with:
           name: hello-spring-jar
           path: target/*.jar
+
+      - name: Store artifact in branch
+        run: |
+          git config user.name "$GIT_NAME"
+          git config user.email "$GIT_EMAIL"
+
+          git checkout artefacts-store
+          mkdir -p artifacts
+          cp target/*.jar artifacts/
+
+          git add artifacts
+          git commit -m "Save artifact"
+          git push origin artefacts-store
+
