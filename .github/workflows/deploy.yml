@@ -1,0 +1,48 @@
+name: CD Deploy to DEV (Artifact)
+
+on:
+  workflow_run:
+    workflows: 
+      - Download Artifact Pipeline  
+    types:
+      - completed
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+    environment: DEV
+
+    steps:
+      
+      - name: Download artifact
+        uses: actions/download-artifact@v4
+        with:
+          ref: artefacts-store
+
+      
+      - name: Setup SSH
+        run: |
+          mkdir -p ~/.ssh
+          echo "${{ secrets.DEV_SSH_KEY }}" > ~/.ssh/id_rsa
+          chmod 600 ~/.ssh/id_rsa
+          ssh-keyscan ${{ secrets.DEV_SSH_HOST }} >> ~/.ssh/known_hosts
+
+    
+      - name: Copy artifact to DEV server
+        run: |
+          scp target/*.jar \
+          ${{ secrets.DEV_SSH_USER }}@${{ secrets.DEV_SSH_HOST }}:/home/${{ secrets.DEV_SSH_USER }}/app/app.jar
+
+      
+      - name: Run application on DEV
+        run: |
+          ssh ${{ secrets.DEV_SSH_USER }}@${{ secrets.DEV_SSH_HOST }} << EOF
+            pkill -f app.jar || true
+            nohup java -jar /home/${{ secrets.DEV_SSH_USER }}/app/app.jar > app.log 2>&1 &
+          EOF
+
+      
+      - name: Verify application
+        run: |
+          sleep 10
+          curl http://${{ secrets.DEV_SSH_HOST }}:8080
