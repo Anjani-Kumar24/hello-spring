@@ -1,0 +1,53 @@
+name: Java Build Pipeline
+
+on:
+  push:
+    branches:
+      - master
+  pull_request:
+    branches:
+      - master
+  workflow_dispatch:
+
+env:
+  GIT_NAME: Anjani-Kumar24
+  GIT_EMAIL: anjani.kumar@beehyv.com
+
+
+jobs:
+  build:
+    
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: checkout code
+        uses: actions/checkout@v4
+
+      - name: setting up java
+        uses: actions/setup-java@v4
+        with:
+          distribution: temurin
+          java-version: 8
+
+      - name: Build & Test
+        run: mvn clean package
+
+      - name: Upload artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: hello-spring-jar
+          path: target/*.jar
+
+      - name: Store artifact in branch
+        run: |
+          git config user.name "$GIT_NAME"
+          git config user.email "$GIT_EMAIL"
+
+          git fetch origin          
+          git checkout artefacts-store
+          mkdir -p artifacts
+          cp target/*.jar artifacts/
+
+          git add artifacts
+          git commit -m "Save artifact"
+          git push origin artefacts-store
